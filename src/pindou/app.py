@@ -9,7 +9,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QInputDialog,
-    QLabel, QMainWindow, QPushButton, QScrollArea, QSpinBox, QVBoxLayout, QWidget,
+    QLabel, QMainWindow, QMessageBox, QPushButton, QScrollArea, QSpinBox,
+    QVBoxLayout, QWidget,
 )
 
 from pindou.bom import compute_bom
@@ -94,17 +95,28 @@ class MainWindow(QMainWindow):
             self, "选择图片", "", "图片 (*.png *.jpg *.jpeg *.bmp)")
         if not path:
             return
-        self.image = Image.open(path)
+        try:
+            self.image = Image.open(path)
+            self.image.load()
+        except Exception as exc:                       # noqa: BLE001
+            QMessageBox.warning(self, "打开失败", f"无法读取图片：{exc}")
+            return
         self.on_generate()
 
     def on_generate(self):
         if self.image is None:
             return
-        board = STANDARD_BOARDS[self.board_combo.currentText()]
-        self.grid_size = compute_grid_size(self.image.width, self.image.height, board)
-        max_colors = self.maxcolors_spin.value() or None
-        grid = quantize_image(self.image, self.grid_size, self.palette,
-                              max_colors=max_colors, dither=self.dither_chk.isChecked())
+        try:
+            board = STANDARD_BOARDS[self.board_combo.currentText()]
+            self.grid_size = compute_grid_size(
+                self.image.width, self.image.height, board)
+            max_colors = self.maxcolors_spin.value() or None
+            grid = quantize_image(
+                self.image, self.grid_size, self.palette,
+                max_colors=max_colors, dither=self.dither_chk.isChecked())
+        except Exception as exc:                       # noqa: BLE001
+            QMessageBox.warning(self, "生成失败", str(exc))
+            return
         self.editor = EditorState(grid)
         self._refresh()
 

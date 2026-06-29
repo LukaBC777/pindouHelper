@@ -26,18 +26,22 @@ class GridSize:
     board_rows: int  # 纵向板数
 
 
-def compute_grid_size(image_w, image_h, board, max_boards_per_axis=4):
+def compute_grid_size(image_w, image_h, board, max_boards_per_axis=4,
+                      max_beads=20000):
     """选定板型后，按图片宽高比选最接近的拼板数（行×列）。
 
-    在 1..max_boards_per_axis 的板数组合里，最小化总网格宽高比与
-    图片宽高比之差；平局时优先板数更少（总豆数更小）的方案。
+    在 1..max_boards_per_axis 的板数组合里，最小化总网格宽高比与图片
+    宽高比之差；平局时优先板数更少。总豆数超过 max_beads 的组合被跳过
+    （至少保留 1×1 板，避免无解）。
     """
     target = image_w / image_h
-    best = None  # (score, total_boards, GridSize)
+    best = None
     for bc in range(1, max_boards_per_axis + 1):
         for br in range(1, max_boards_per_axis + 1):
             cols = bc * board.width
             rows = br * board.height
+            if cols * rows > max_beads and not (bc == 1 and br == 1):
+                continue
             score = abs(cols / rows - target)
             cand = (round(score, 9), bc * br, bc, br, cols, rows)
             if best is None or cand[:2] < best[:2]:
