@@ -32,3 +32,15 @@ def test_palette_from_csv(tmp_path):
     assert len(pal) == 2
     assert pal.colors()[1].code == "B2"
     assert pal.colors()[0].symbol == "a"
+
+
+import importlib.resources as res
+
+
+def test_bundled_mard_loads():
+    with res.as_file(res.files("pindou.data").joinpath("mard.csv")) as p:
+        pal = Palette.from_csv(p, name="mard")
+    assert len(pal) > 100
+    # 所有 RGB 在合法范围
+    rgb = pal.rgb_array()
+    assert rgb.min() >= 0 and rgb.max() <= 255
