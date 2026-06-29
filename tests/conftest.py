@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from pindou.palette import BeadColor, Palette
-
 
 @pytest.fixture
 def tiny_palette():
     """4 色微型调色板：红、绿、蓝、白（Lab 由构造函数计算）。"""
+    from pindou.palette import BeadColor, Palette
+
     colors = [
         BeadColor.from_rgb("R1", "red", (255, 0, 0)),
         BeadColor.from_rgb("G1", "green", (0, 255, 0)),
