@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pindou"
+version = "0.1.0"
+description = "图片转拼豆图纸生成器"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "Pillow>=10.2",
+    "scikit-image>=0.22",
+    "PySide6>=6.6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+pindou = "pindou.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pindou = ["data/*.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
