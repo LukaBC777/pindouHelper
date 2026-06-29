@@ -23,3 +23,6 @@ dist/
 # OS
 Thumbs.db
 .DS_Store
+
+# 规划文档（spec/plan）不入库，本地保留
+docs/superpowers/
